@@ -11,14 +11,22 @@ char buffer[] = "00:00";
 char bpmtext[32] = "80";
 
 AppTimer *timer;
-int delta = 500;
+
+
 int bpm = 80;
+
+// time in between vibrations, in ms
+int delta = 500;
+
 bool vibrating = 0;
 
 // Vibe pattern: ON for 50ms -- seems to be shortest interval that can be felt
-static const uint32_t const segments[] = {50};
+//static const uint32_t const segments[] = {50};
+uint32_t segments[1] = {50};
 VibePattern pat = {
+    // uint32_t type
     .durations = segments,
+    // size_t type
     .num_segments = ARRAY_LENGTH(segments),
 };
 
@@ -39,6 +47,7 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
         vibrating = 0;
     }
     else{
+        delta = (60 * 1000)/ bpm;
         timer = app_timer_register(delta, (AppTimerCallback) timer_callback, NULL);
         vibrating = 1;
     }
@@ -67,8 +76,6 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
     text_layer_set_text(text_layer, bpmChar);
     free(bpmChar);
     
-    //app_timer_cancel(timer);
-    
 }
 
 
@@ -93,7 +100,7 @@ static void click_config_provider(void *context) {
     
 }*/
 
-static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
+/*static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
 {
     //Here we will update the watchface display
     
@@ -102,21 +109,17 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
     
     //Change the TextLayer text to show the new time!
     text_layer_set_text(text_layer, buffer);
-}
+}*/
 
 
 // adds the creation of Window's elements
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
-  GRect bounds = layer_get_bounds(window_layer);
-
-    
-  //text_layer = text_layer_create((GRect) { .origin = { 0, 72 }, .size = { bounds.size.w, 20 } });
-    
-    // allocate memory for the underlying structure
+ // GRect bounds = layer_get_bounds(window_layer);
     
     
-    text_layer = text_layer_create((GRect) { .origin = { 0, 72 }, .size = { bounds.size.w, 20 } });
+   /* text_layer = text_layer_create((GRect) { .origin = { 0, 72 }, .size = { bounds.size.w, 20 } });
+    
     
    
     
@@ -124,18 +127,21 @@ static void window_load(Window *window) {
     
     
   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(text_layer));
+  layer_add_child(window_layer, text_layer_get_layer(text_layer));*/
     
-    //Get a time structure so that the face doesn't start blank
-    /*struct tm *t;
-    time_t temp;
-    temp = time(NULL);
-    t = localtime(&temp);
     
-    //Manually call the tick handler when the window is loading
-    //tick_handler(t, MINUTE_UNIT);*/
     
-    //timer = app_timer_register(delta, (AppTimerCallback) timer_callback, NULL);
+    
+    text_layer = text_layer_create(GRect(0, 53, 132, 168));
+    text_layer_set_background_color(text_layer, GColorClear);
+    text_layer_set_text_color(text_layer, GColorBlack);
+    text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
+    text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
+    
+    text_layer_set_text(text_layer, bpmtext);
+    
+    layer_add_child(window_get_root_layer(window), (Layer*) text_layer);
+    
 }
 
 // safely destroys the Window's elements
@@ -167,7 +173,7 @@ static void init(void) {
 
 static void deinit(void) {
     window_destroy(window);
-    tick_timer_service_unsubscribe();
+    //tick_timer_service_unsubscribe();
 }
 
 int main(void) {
