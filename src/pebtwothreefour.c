@@ -11,32 +11,37 @@ char buffer[] = "00:00";
 char bpmtext[32] = "80";
 
 AppTimer *timer;
-int delta = 750;
+int delta = 500;
 int bpm = 80;
-//bool startstop = 0;
+bool vibrating = 0;
 
-// Vibe pattern: ON for 1ms
-static const uint32_t const segments[] = {1};
+// Vibe pattern: ON for 50ms -- seems to be shortest interval that can be felt
+static const uint32_t const segments[] = {50};
 VibePattern pat = {
     .durations = segments,
     .num_segments = ARRAY_LENGTH(segments),
 };
 
+void timer_callback(void *data) {
+    vibes_enqueue_custom_pattern(pat);
+    //vibes_short_pulse();
+    
+    //Register next execution
+    timer = app_timer_register(delta, (AppTimerCallback) timer_callback, NULL);
+}
+
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-  text_layer_set_text(text_layer, "Metronome stopped");
+  //text_layer_set_text(text_layer, "Metronome stopped");
     
-    /*if (startstop){
+    if (vibrating){
         app_timer_cancel(timer);
+        vibrating = 0;
     }
-    
     else{
         timer = app_timer_register(delta, (AppTimerCallback) timer_callback, NULL);
-    }*/
-    
-    
-    
-    app_timer_cancel(timer);
+        vibrating = 1;
+    }
 }
 
 char* itoa(int val, int base){
@@ -54,13 +59,15 @@ char* itoa(int val, int base){
 }
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  
+  app_timer_cancel(timer);
     
     bpm = bpm + 1;
     char * bpmChar = malloc(strlen(itoa(bpm,10))+1);
     strcpy(bpmChar, itoa(bpm, 10));
     text_layer_set_text(text_layer, bpmChar);
     free(bpmChar);
+    
+    //app_timer_cancel(timer);
     
 }
 
@@ -97,13 +104,6 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
     text_layer_set_text(text_layer, buffer);
 }
 
-void timer_callback(void *data) {
-    //vibes_enqueue_custom_pattern(pat);
-    vibes_short_pulse();
-    
-    //Register next execution
-    timer = app_timer_register(delta, (AppTimerCallback) timer_callback, NULL);
-}
 
 // adds the creation of Window's elements
 static void window_load(Window *window) {
@@ -135,7 +135,7 @@ static void window_load(Window *window) {
     //Manually call the tick handler when the window is loading
     //tick_handler(t, MINUTE_UNIT);*/
     
-    timer = app_timer_register(delta, (AppTimerCallback) timer_callback, NULL);
+    //timer = app_timer_register(delta, (AppTimerCallback) timer_callback, NULL);
 }
 
 // safely destroys the Window's elements
