@@ -1,8 +1,8 @@
 {
   "uuid": "973fc7ab-ca69-4ce6-9708-e926dc1bc051",
-  "shortName": "pebtwothreefour",
-  "longName": "pebtwothreefour",
-  "companyName": "MakeAwesomeHappen",
+  "shortName": "Peb-2-3-4",
+  "longName": "Peb-2-3-4",
+  "companyName": "Meghan Kane",
   "versionCode": 1,
   "versionLabel": "1.0.0",
   "watchapp": {
@@ -12,6 +12,29 @@
     "dummy": 0
   },
   "resources": {
-    "media": []
+    "media": 
+    [
+            {
+            "name": "ARROW_UP",
+            "file": "arrow_up.png",
+            "type": "png"
+        },
+        {
+            "name": "ARROW_DOWN",
+            "file": "arrow_down.png",
+            "type": "png"
+        },
+
+        {
+            "name": "PLAY",
+            "file": "play.png",
+            "type": "png"
+        },
+        {
+            "name": "PAUSE",
+            "file": "pause.png",
+            "type": "png"
+        }
+    ]
   }
 }
