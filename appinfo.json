@@ -4,7 +4,7 @@
   "longName": "Peb-2-3-4",
   "companyName": "Meghan Kane",
   "versionCode": 1,
-  "versionLabel": "1.0.0",
+  "versionLabel": "1.1",
   "watchapp": {
     "watchface": false
   },
@@ -12,29 +12,32 @@
     "dummy": 0
   },
   "resources": {
-    "media": 
-    [
-            {
-            "name": "ARROW_UP",
-            "file": "arrow_up.png",
-            "type": "png"
-        },
-        {
-            "name": "ARROW_DOWN",
-            "file": "arrow_down.png",
-            "type": "png"
-        },
-
-        {
-            "name": "PLAY",
-            "file": "play.png",
-            "type": "png"
-        },
-        {
-            "name": "PAUSE",
-            "file": "pause.png",
-            "type": "png"
-        }
+    "media": [
+      {
+        "name": "ARROW_UP",
+        "file": "arrow_up.png",
+        "type": "png"
+      },
+      {
+        "name": "ARROW_DOWN",
+        "file": "arrow_down.png",
+        "type": "png"
+      },
+      {
+        "name": "PLAY",
+        "file": "play.png",
+        "type": "png"
+      },
+      {
+        "name": "PAUSE",
+        "file": "pause.png",
+        "type": "png"
+      }
     ]
-  }
+  },
+  "targetPlatforms": [
+    "aplite",
+    "basalt"
+  ],
+  "sdkVersion": "3"
 }
