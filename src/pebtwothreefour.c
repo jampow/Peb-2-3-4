@@ -14,11 +14,12 @@ static GBitmap *gb_play;
 static GBitmap *gb_pause;
 
 // bpm defaulted to 120 when app opens
-int bpm = 120;
+int bpm = 60;
+float index = 0.73;
 static int min_bpm = 40;
-static int max_bpm = 240;
-char bpmtext[] = "120";
-char bpmlabel[] = "bpm";
+static int max_bpm = 120;
+char bpmtext[] = "60";
+char bpmlabel[] = "m/min";
 
 // timers
 AppTimer *betweenbeats_timer;
@@ -101,7 +102,7 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
     }
     else{
         // sets time between beat vibrations according to bpm set
-        delta = (60 * 1000)/ bpm;
+        delta = (60000) / (bpm / index);
         betweenbeats_timer = app_timer_register(delta, (AppTimerCallback) betweenbeats_timer_callback, NULL);
         is_vibrating = 1;
         
@@ -122,7 +123,7 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
         
         if (is_vibrating){
             app_timer_cancel(betweenbeats_timer);
-            delta = (60 * 1000)/ bpm;
+            delta = (60000) / (bpm / index);
             betweenbeats_timer = app_timer_register(delta, (AppTimerCallback) betweenbeats_timer_callback, NULL);
         }
     }
@@ -139,7 +140,7 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
         
         if (is_vibrating){
             app_timer_cancel(betweenbeats_timer);
-            delta = (60 * 1000)/ bpm;
+            delta = (60000) / (bpm / index);
             betweenbeats_timer = app_timer_register(delta, (AppTimerCallback) betweenbeats_timer_callback, NULL);
         }
     }
@@ -158,7 +159,7 @@ void up_long_click_release_handler(ClickRecognizerRef recognizer, void *context)
    
     app_timer_cancel(longupclick_timer);
     if (is_vibrating){
-        delta = (60 * 1000)/ bpm;
+        delta = (60000) / (bpm / index);
         betweenbeats_timer = app_timer_register(delta, (AppTimerCallback) betweenbeats_timer_callback, NULL);
     }
 }
@@ -176,7 +177,7 @@ void down_long_click_release_handler(ClickRecognizerRef recognizer, void *contex
     
     app_timer_cancel(longdownclick_timer);
     if (is_vibrating){
-        delta = (60 * 1000)/ bpm;
+        delta = (60000) / (bpm / index);
         betweenbeats_timer = app_timer_register(delta, (AppTimerCallback) betweenbeats_timer_callback, NULL);
     }
 }
