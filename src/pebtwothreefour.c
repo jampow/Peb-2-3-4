@@ -13,13 +13,13 @@ static GBitmap *gb_arrow_down;
 static GBitmap *gb_play;
 static GBitmap *gb_pause;
 
-// bpm defaulted to 120 when app opens
-int bpm = 60;
+// velocity defaulted to 60 when app opens
+int velocity = 60;
 float index = 0.73;
-static int min_bpm = 40;
-static int max_bpm = 120;
-char bpmtext[] = "60";
-char bpmlabel[] = "m/min";
+static int min_velocity = 40;
+static int max_velocity = 120;
+char velocitytext[] = "60";
+char velocitylabel[] = "m/min";
 
 // timers
 AppTimer *betweenbeats_timer;
@@ -32,7 +32,7 @@ int delta = 500;
 //
 bool is_vibrating = 0;
 
-// Vibe pattern: ON for 45ms -- seems to be shortest interval that can be felt and is relevant at each tempo between 40 and 240 bpm
+// Vibe pattern: ON for 45ms -- seems to be shortest interval that can be felt and is relevant at each tempo between 40 and 120 m/min
 static const uint32_t const segments[] = {45};
 VibePattern pat = {
     // uint32_t type
@@ -62,12 +62,12 @@ char* itoa(int val, int base){
 
 void longupclick_timer_callback(void *data) {
     
-    if (bpm < max_bpm){
-        bpm++;
-        char * bpmChar = malloc(strlen(itoa(bpm,10))+1);
-        strcpy(bpmChar, itoa(bpm, 10));
-        text_layer_set_text(text_layer, bpmChar);
-        free(bpmChar);
+    if (velocity < max_velocity){
+        velocity++;
+        char * velocityChar = malloc(strlen(itoa(velocity,10))+1);
+        strcpy(velocityChar, itoa(velocity, 10));
+        text_layer_set_text(text_layer, velocityChar);
+        free(velocityChar);
         
         //Register next execution
         longupclick_timer = app_timer_register(50, (AppTimerCallback) longupclick_timer_callback, NULL);
@@ -77,12 +77,12 @@ void longupclick_timer_callback(void *data) {
 
 void longdownclick_timer_callback(void *data) {
     
-    if (bpm > min_bpm){
-        bpm--;
-        char * bpmChar = malloc(strlen(itoa(bpm,10))+1);
-        strcpy(bpmChar, itoa(bpm, 10));
-        text_layer_set_text(text_layer, bpmChar);
-        free(bpmChar);
+    if (velocity > min_velocity){
+        velocity--;
+        char * velocityChar = malloc(strlen(itoa(velocity,10))+1);
+        strcpy(velocityChar, itoa(velocity, 10));
+        text_layer_set_text(text_layer, velocityChar);
+        free(velocityChar);
         
         //Register next execution
         longdownclick_timer = app_timer_register(50, (AppTimerCallback) longdownclick_timer_callback, NULL);
@@ -101,8 +101,8 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
         action_bar_layer_set_icon(abl_action, BUTTON_ID_SELECT, gb_play);
     }
     else{
-        // sets time between beat vibrations according to bpm set
-        delta = (60000) / (bpm / index);
+        // sets time between beat vibrations according to velocity set
+        delta = (60000) / (velocity / index);
         betweenbeats_timer = app_timer_register(delta, (AppTimerCallback) betweenbeats_timer_callback, NULL);
         is_vibrating = 1;
         
@@ -114,16 +114,16 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
     
-    if (bpm < max_bpm){
-        bpm++;
-        char * bpmChar = malloc(strlen(itoa(bpm,10))+1);
-        strcpy(bpmChar, itoa(bpm, 10));
-        text_layer_set_text(text_layer, bpmChar);
-        free(bpmChar);
+    if (velocity < max_velocity){
+        velocity++;
+        char * velocityChar = malloc(strlen(itoa(velocity,10))+1);
+        strcpy(velocityChar, itoa(velocity, 10));
+        text_layer_set_text(text_layer, velocityChar);
+        free(velocityChar);
         
         if (is_vibrating){
             app_timer_cancel(betweenbeats_timer);
-            delta = (60000) / (bpm / index);
+            delta = (60000) / (velocity / index);
             betweenbeats_timer = app_timer_register(delta, (AppTimerCallback) betweenbeats_timer_callback, NULL);
         }
     }
@@ -131,16 +131,16 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
     
-    if (bpm > min_bpm){
-        bpm--;
-        char * bpmChar = malloc(strlen(itoa(bpm,10))+1);
-        strcpy(bpmChar, itoa(bpm, 10));
-        text_layer_set_text(text_layer, bpmChar);
-        free(bpmChar);
+    if (velocity > min_velocity){
+        velocity--;
+        char * velocityChar = malloc(strlen(itoa(velocity,10))+1);
+        strcpy(velocityChar, itoa(velocity, 10));
+        text_layer_set_text(text_layer, velocityChar);
+        free(velocityChar);
         
         if (is_vibrating){
             app_timer_cancel(betweenbeats_timer);
-            delta = (60000) / (bpm / index);
+            delta = (60000) / (velocity / index);
             betweenbeats_timer = app_timer_register(delta, (AppTimerCallback) betweenbeats_timer_callback, NULL);
         }
     }
@@ -159,7 +159,7 @@ void up_long_click_release_handler(ClickRecognizerRef recognizer, void *context)
    
     app_timer_cancel(longupclick_timer);
     if (is_vibrating){
-        delta = (60000) / (bpm / index);
+        delta = (60000) / (velocity / index);
         betweenbeats_timer = app_timer_register(delta, (AppTimerCallback) betweenbeats_timer_callback, NULL);
     }
 }
@@ -177,7 +177,7 @@ void down_long_click_release_handler(ClickRecognizerRef recognizer, void *contex
     
     app_timer_cancel(longdownclick_timer);
     if (is_vibrating){
-        delta = (60000) / (bpm / index);
+        delta = (60000) / (velocity / index);
         betweenbeats_timer = app_timer_register(delta, (AppTimerCallback) betweenbeats_timer_callback, NULL);
     }
 }
@@ -219,7 +219,7 @@ static void window_load(Window *window) {
     text_layer_set_text_color(text_layer, GColorBlack);
     text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
     text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
-    text_layer_set_text(text_layer, bpmtext);
+    text_layer_set_text(text_layer, velocitytext);
     
     layer_add_child(window_get_root_layer(window), (Layer*) text_layer);
     
@@ -231,7 +231,7 @@ static void window_load(Window *window) {
     text_layer_set_text_alignment(units_layer, GTextAlignmentCenter);
     text_layer_set_font(units_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28));
     
-    text_layer_set_text(units_layer, bpmlabel);
+    text_layer_set_text(units_layer, velocitylabel);
     layer_add_child(window_get_root_layer(window), (Layer*) units_layer);
 }
 
